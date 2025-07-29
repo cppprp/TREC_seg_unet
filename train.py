@@ -6,21 +6,11 @@ import os
 from torch_em.model import UNet3d
 from torch.utils.data import DataLoader
 import torchio as tio
+import numpy as np
 
-
-
-#input_labels = '/Volumes/ASVETLOVE/TREC/ROI_segs/'
-#input_data = '/Volumes/ASVETLOVE/TREC/ROI_xraz/'
-#output_labels = "D:/Angelika/ROI_labels/"
-#output_data = "D:/Angelika/ROI_Xray/"
-#output_folder = "D:/Angelika/Prediction/"
-#data_labels = tf.load_tif_stack(input_labels)
-#data = tf.load_tif_stack(input_data)
-#tf.create_labels(data, data_labels, output_data, output_labels)
-
-model_store = "/media/asvetlove/ASVETLOVE/segmenteru/model/"
-os.makedirs(model_store, exist_ok=True)
-data_dir = "/media/asvetlove/ASVETLOVE/segmenteru/ML_patches/"
+#model_store = "/Volume/asvetlove/ASVETLOVE/segmenteru/model/"
+#os.makedirs(model_store, exist_ok=True)
+data_dir = "/Volumes/ASVETLOVE/segmenteru/ML_patches/"
 
 
 xray = []
@@ -46,7 +36,7 @@ train_val_split = 0.80
 #label = tf.load_tif_stack(output_labels, bit = 8)
 
 # set a working device, preferentially GPU
-if torch.cuda.is_available():
+'''if torch.cuda.is_available():
     print("GPU is available")
     device = torch.device("cuda")
 elif torch.backends.mps.is_available():
@@ -54,14 +44,14 @@ elif torch.backends.mps.is_available():
     device = torch.device("mps")
 else:
     print("GPU is NOT available. The training will be very slow!")
-    device = torch.device("cpu")
+    device = torch.device("cpu")'''
 
 # setup model
-model = UNet3d(in_channels=1, out_channels=2, initial_features=32,final_activation="Sigmoid")
-model.to(device)
-loss = lt.DiceLoss()
-loss.to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-10)  #default LR -3
+#model = UNet3d(in_channels=1, out_channels=2, initial_features=32,final_activation="Sigmoid")
+#model.to(device)
+#loss = lt.DiceLoss()
+#loss.to(device)
+#optimizer = torch.optim.Adam(model.parameters(), lr=1e-10)  #default LR -3
 metric = lt.dice_score
 patch_shape = (128, 128, 128)
 batch_size = 1
@@ -78,22 +68,44 @@ transforms = {
     tio.RandomFlip(axes=(0,1,2))
 }
 # Prepare the data
-train_dataset = lt.CustomDataset(xray[:int(len(xray)*train_val_split)], label[:int(len(label)*train_val_split)], patch_shape=patch_shape, transform = transforms, mask_transform = lt.label_transform)
-val_dataset = lt.CustomDataset(xray[int(len(xray)*train_val_split):], label[int(len(label)*train_val_split):], patch_shape=patch_shape, transform = transforms, mask_transform = lt.label_transform)
+train_dataset = lt.CustomDataset(xray[:int(len(xray)*train_val_split)], label[:int(len(label)*train_val_split)], patch_shape=patch_shape, transform = None, mask_transform = lt.label_transform)
+val_dataset = lt.CustomDataset(xray[int(len(xray)*train_val_split):], label[int(len(label)*train_val_split):], patch_shape=patch_shape, transform = None, mask_transform = lt.label_transform)
 
 
 train_loader = DataLoader(train_dataset, batch_size=batch_size)
 val_loader = DataLoader(val_dataset, batch_size=batch_size)
-
-
-train_losses, train_scores, val_losses, val_scores = lt.run_training(model, train_loader, val_loader, loss, metric, optimizer, n_epochs, device)
+im, target = next(iter(train_loader))
+print(torch.min(im), torch.max(im), im.dtype)
+print(torch.min(target), torch.max(target), target.dtype)
+im, target = next(iter(train_loader))
+print(torch.min(im), torch.max(im), im.dtype)
+print(torch.min(target), torch.max(target), target.dtype)
+im, target = next(iter(train_loader))
+print(torch.min(im), torch.max(im), im.dtype)
+print(torch.min(target), torch.max(target), target.dtype)
+im, target = next(iter(train_loader))
+print(torch.min(im), torch.max(im), im.dtype)
+print(torch.min(target), torch.max(target), target.dtype)
+im, target = next(iter(train_loader))
+print(torch.min(im), torch.max(im), im.dtype)
+print(torch.min(target), torch.max(target), target.dtype)
+im, target = next(iter(train_loader))
+print(torch.min(im), torch.max(im), im.dtype)
+print(torch.min(target), torch.max(target), target.dtype)
+im, target = next(iter(train_loader))
+print(torch.min(im), torch.max(im), im.dtype)
+print(torch.min(target), torch.max(target), target.dtype)
+im, target = next(iter(train_loader))
+print(torch.min(im), torch.max(im), im.dtype)
+print(torch.min(target), torch.max(target), target.dtype)
+'''train_losses, train_scores, val_losses, val_scores = lt.run_training(model, train_loader, val_loader, loss, metric, optimizer, n_epochs, device)
 save_folder = os.path.join(model_store, "model_eneg10")
 os.makedirs(save_folder, exist_ok=True)
 lt.plot_training(train_losses, val_losses, train_scores, val_scores, save_folder)
 
 model_name = "UNet3d_xray_eneg10"
 model_path = os.path.join(save_folder, model_name)
-torch.save(model.state_dict(),model_path)
+torch.save(model.state_dict(),model_path)'''
 
 
 #test_dataset = CustomDataset(xray[300:], anno[300:], patch_shape=patch_shape, mask_transform = label_transform)

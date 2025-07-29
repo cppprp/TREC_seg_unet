@@ -3,7 +3,7 @@ import tools as tf
 import learning_tools as lt
 from torch.utils.data import DataLoader
 
-patch_shape = (48, 48, 48)
+patch_shape = (128, 128, 48)
 batch_size = 1
 output_labels = "D:/Angelika/ROI_labels/"
 output_data = "D:/Angelika/ROI_Xray/"

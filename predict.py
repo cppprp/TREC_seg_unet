@@ -22,8 +22,8 @@ prediction = predict_with_halo(
     model,  # your model, e.g. a trained 3D U-net.
     gpu_ids=[0],  # use this if you have a GPU, if you run on a cpu use
     # gpu_ids=["cpu"],  instead
-    block_shape=(128, 128, 128),  # this is the siz
-    halo=(64, 64, 64),  # this is the 'halo' cropped from each side of the border to avoid boundary artifacts
+    block_shape=(64, 64, 64),  # this is the siz, total with halo cannot be bgger than training patch
+    halo=(32, 32, 32),  # this is the 'halo' cropped from each side of the border to avoid boundary artifacts, half the size of the object
     preprocess=None,  # This needs to be set to avoid preprocessing by this fucntion.
 )
 foreground, boundaries = prediction[0], prediction[1]
